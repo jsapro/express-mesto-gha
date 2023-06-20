@@ -20,6 +20,15 @@ mongoose
     console.log(`Ошибка: ${err.message}`);
   });
 
+// временное решение, добавляет в каждый запрос объект user (захардкодили _id)
+app.use((req, res, next) => {
+  req.user = {
+    _id: '6491ee441b433eb98ee93579',
+  };
+
+  next();
+});
+
 app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса,
 app.use('/users', usersRoutes);
