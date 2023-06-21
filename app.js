@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 });
 
 app.use(bodyParser.json()); // для собирания JSON-формата
-app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса,
+app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
 

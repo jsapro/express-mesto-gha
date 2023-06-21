@@ -11,7 +11,9 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => res.send({ user }))
-    .catch((err) => res.status(500).send({ message: `Ошибка getUserById: ${err.message}` }));
+    .catch((err) =>
+      res.status(500).send({ message: `Ошибка getUserById: ${err.message}` })
+    );
 };
 
 module.exports.createUser = (req, res) => {
@@ -19,5 +21,16 @@ module.exports.createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => res.send({ user }))
-    .catch((err) => res.status(500).send({ message: `Ошибка createUser: ${err.message}` }));
+    .catch((err) =>
+      res.status(500).send({ message: `Ошибка createUser: ${err.message}` })
+    );
+};
+
+module.exports.updateUserInfo = (req, res) => {
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, about })
+    .then((user) => res.send(user))
+    .catch((err) =>
+      res.status(500).send({ message: `Ошибка createUser: ${err.message}` })
+    );
 };
