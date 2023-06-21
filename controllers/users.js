@@ -28,9 +28,20 @@ module.exports.createUser = (req, res) => {
 
 module.exports.updateUserInfo = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
     .then((user) => res.send(user))
     .catch((err) =>
-      res.status(500).send({ message: `Ошибка createUser: ${err.message}` })
+      res.status(500).send({ message: `Ошибка updateUserInfo: ${err.message}` })
+    );
+};
+
+module.exports.updateUserAvatar = (req, res) => {
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+    .then((user) => res.send(user))
+    .catch((err) =>
+      res
+        .status(500)
+        .send({ message: `Ошибка updateUserAvatar: ${err.message}` })
     );
 };
