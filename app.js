@@ -34,6 +34,10 @@ app.use(bodyParser.urlencoded({ extended: true })); // для приёма ве�
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
 
+app.use('/*', (req, res) => {
+  res.status(500).send({ message: 'Такой страницы не существует' });
+});
+
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
