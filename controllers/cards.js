@@ -31,7 +31,7 @@ module.exports.createCard = (req, res) => {
   console.log(name, link, id);
 
   Card.create({ name, link, owner: id })
-    .then((card) => res.send({ card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'SomeErrorName') {
         return res.status(400).send({
