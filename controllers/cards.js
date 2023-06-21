@@ -28,3 +28,27 @@ module.exports.createCard = (req, res) => {
       res.status(500).send({ message: `Ошибка createCard: ${err.message}` })
     );
 };
+
+module.exports.likeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { new: true }
+  )
+    .then((card) => res.send(card))
+    .catch((err) =>
+      res.status(500).send({ message: `Ошибка likeCard: ${err.message}` })
+    );
+};
+
+module.exports.dislikeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { new: true }
+  )
+    .then((card) => res.send(card))
+    .catch((err) =>
+      res.status(500).send({ message: `Ошибка dislikeCard: ${err.message}` })
+    );
+};
