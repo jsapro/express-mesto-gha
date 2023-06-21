@@ -4,17 +4,31 @@ module.exports.getCards = (req, res) => {
   Card.find({})
     .populate(['name', 'link'])
     .then((cards) => res.send({ cards }))
-    .catch((err) =>
-      res.status(500).send({ message: `Ошибка getCards: ${err.message}` })
-    );
+    .catch((err) => {
+      if (err.name === 'SomeErrorName') {
+        return res
+          .status(404)
+          .send({ message: `Ошибка getCards: ${err.message}` });
+      }
+      return res
+        .status(500)
+        .send({ message: `Ошибка likeCard: ${err.message}` });
+    });
 };
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.user._id)
     .then((deletedCard) => res.send(deletedCard))
-    .catch((err) =>
-      res.status(500).send({ message: `Ошибка deleteCard: ${err.message}` })
-    );
+    .catch((err) => {
+      if (err.name === 'SomeErrorName') {
+        return res
+          .status(404)
+          .send({ message: `Ошибка getCards: ${err.message}` });
+      }
+      return res
+        .status(500)
+        .send({ message: `Ошибка likeCard: ${err.message}` });
+    });
 };
 
 module.exports.createCard = (req, res) => {
@@ -24,9 +38,16 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner: id })
     .then((card) => res.send({ card }))
-    .catch((err) =>
-      res.status(500).send({ message: `Ошибка createCard: ${err.message}` })
-    );
+    .catch((err) => {
+      if (err.name === 'SomeErrorName') {
+        return res
+          .status(400)
+          .send({ message: `Ошибка getCards: ${err.message}` });
+      }
+      return res
+        .status(500)
+        .send({ message: `Ошибка likeCard: ${err.message}` });
+    });
 };
 
 module.exports.likeCard = (req, res) => {
@@ -36,9 +57,16 @@ module.exports.likeCard = (req, res) => {
     { new: true }
   )
     .then((card) => res.send(card))
-    .catch((err) =>
-      res.status(500).send({ message: `Ошибка likeCard: ${err.message}` })
-    );
+    .catch((err) => {
+      if (err.name === 'SomeErrorName') {
+        return res
+          .status(400)
+          .send({ message: `Ошибка getCards: ${err.message}` });
+      }
+      return res
+        .status(500)
+        .send({ message: `Ошибка likeCard: ${err.message}` });
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -48,7 +76,14 @@ module.exports.dislikeCard = (req, res) => {
     { new: true }
   )
     .then((card) => res.send(card))
-    .catch((err) =>
-      res.status(500).send({ message: `Ошибка dislikeCard: ${err.message}` })
-    );
+    .catch((err) => {
+      if (err.name === 'SomeErrorName') {
+        return res
+          .status(400)
+          .send({ message: `Ошибка getCards: ${err.message}` });
+      }
+      return res
+        .status(500)
+        .send({ message: `Ошибка likeCard: ${err.message}` });
+    });
 };
