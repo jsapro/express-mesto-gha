@@ -10,8 +10,8 @@ module.exports.getCards = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findById(req.user._id)
-    .then((card) => console.log(`Удалить карточку №${card._id}`))
+  Card.findByIdAndRemove(req.user._id)
+    .then((deletedCard) => res.send(deletedCard))
     .catch((err) =>
       res.status(500).send({ message: `Ошибка deleteCard: ${err.message}` })
     );
@@ -19,7 +19,8 @@ module.exports.deleteCard = (req, res) => {
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
-  const { id } = req.user._id;
+  const id = req.user._id;
+  console.log(name, link, id);
 
   Card.create({ name, link, owner: id })
     .then((card) => res.send({ card }))
