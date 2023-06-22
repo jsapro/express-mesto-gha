@@ -3,23 +3,30 @@ const Card = require('../models/card');
 module.exports.getCards = (req, res) => {
   Card.find({})
     .populate(['name', 'link'])
-    .then((cards) => res.send({ cards }))
-    .catch((err) => {
-      if (err.name === 'SomeErrorName') {
-        return res.status(404).send({ message: 'Карточки не найдены' });
+    .then((cards) => {
+      if (cards) {
+        return res.send({ cards });
       }
-      return res.status(500).send({ message: 'Ошибка по умолчанию' });
-    });
+      return res.status(404).send({ message: 'Карточки не найдены' });
+    })
+    .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию' }));
 };
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.user._id)
-    .then((deletedCard) => res.send(deletedCard))
+    .then((deletedCard) => {
+      if (deletedCard) {
+        return res.send({ deletedCard });
+      }
+      return res
+        .status(404)
+        .send({ message: 'Карточка с указанным _id не найдена' });
+    })
     .catch((err) => {
       if (err.name === 'SomeErrorName') {
         return res
-          .status(404)
-          .send({ message: 'Карточка с указанным _id не найдена' });
+          .status(400)
+          .send({ message: 'Переданы некорректные данные для получения карточки' });
       }
       return res.status(500).send({ message: 'Ошибка по умолчанию' });
     });
@@ -49,7 +56,14 @@ module.exports.likeCard = (req, res) => {
     // eslint-disable-next-line comma-dangle
     { new: true }
   )
-    .then((card) => res.send(card))
+    .then((card) => {
+      if (card) {
+        return res.send({ card });
+      }
+      return res
+        .status(404)
+        .send({ message: 'Передан несуществующий _id карточки' });
+    })
     .catch((err) => {
       if (err.name === 'SomeErrorName') {
         return res.status(400).send({
@@ -67,7 +81,14 @@ module.exports.dislikeCard = (req, res) => {
     // eslint-disable-next-line comma-dangle
     { new: true }
   )
-    .then((card) => res.send(card))
+    .then((card) => {
+      if (card) {
+        return res.send({ card });
+      }
+      return res
+        .status(404)
+        .send({ message: 'Передан несуществующий _id карточки' });
+    })
     .catch((err) => {
       if (err.name === 'SomeErrorName') {
         return res.status(400).send({
