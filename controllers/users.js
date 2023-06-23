@@ -8,9 +8,7 @@ module.exports.getUsers = (req, res) => {
       }
       return res.status(404).send({ message: 'Пользователи не найдены' });
     })
-    .catch((err) =>
-      res.status(500).send({ message: 'Ошибка по умолчанию', error: err })
-    );
+    .catch((err) => res.status(500).send({ message: 'Ошибка по умолчанию', error: err }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -24,7 +22,7 @@ module.exports.getUserById = (req, res) => {
         .send({ message: 'Пользователь по указанному _id не найден' });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(400).send({
           message: 'Переданы некорректные данные для получения пользователя',
           error: err,
@@ -42,7 +40,7 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.send({ user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(400).send({
           message: 'Переданы некорректные данные при создании пользователя',
           error: err,
@@ -66,7 +64,7 @@ module.exports.updateUserInfo = (req, res) => {
         .send({ message: 'Пользователь с указанным _id не найден' });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(400).send({
           message: 'Переданы некорректные данные при обновлении профиля',
           error: err,
@@ -90,7 +88,7 @@ module.exports.updateUserAvatar = (req, res) => {
         .send({ message: 'Пользователь с указанным _id не найден' });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(400).send({
           message: 'Переданы некорректные данные при обновлении аватара',
           error: err,
