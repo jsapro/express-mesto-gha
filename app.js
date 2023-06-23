@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 
@@ -30,13 +29,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(bodyParser.json()); // для собирания JSON-формата
-app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
+app.use(express.json()); // вместо bodyParser
+
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
 
-app.use('/*', (req, res) => {
-  res.status(500).send({ message: 'Такой страницы не существует' });
+app.use('*', (req, res) => {
+  res.status(404).send({ message: 'Такой страницы не существует' });
 });
 
 app.listen(PORT, () => {
