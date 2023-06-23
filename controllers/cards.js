@@ -13,7 +13,7 @@ module.exports.getCards = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.user._id)
+  Card.findByIdAndRemove(req.params.cardId)
     .then((deletedCard) => {
       if (deletedCard) {
         return res.send({ deletedCard });
