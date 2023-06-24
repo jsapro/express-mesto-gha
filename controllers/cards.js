@@ -4,19 +4,10 @@ const Card = require('../models/card');
 module.exports.getCards = (req, res) => {
   Card.find({})
     .populate(['name', 'link'])
-    .then((cards) => {
-      if (cards) {
-        return res.send({ cards });
-      }
-      return res
-        .status(constants.HTTP_STATUS_NOT_FOUND)
-        .send({ message: 'Карточки не найдены' });
-    })
-    .catch((err) =>
-      res
-        .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию', error: err })
-    );
+    .then((cards) => res.send({ cards }))
+    .catch((err) => res
+      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
+      .send({ message: 'Ошибка по умолчанию', error: err }));
 };
 
 module.exports.deleteCard = (req, res) => {

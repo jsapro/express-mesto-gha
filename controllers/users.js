@@ -3,19 +3,10 @@ const User = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => {
-      if (users) {
-        return res.send({ users });
-      }
-      return res
-        .status(constants.HTTP_STATUS_NOT_FOUND)
-        .send({ message: 'Пользователи не найдены' });
-    })
-    .catch((err) =>
-      res
-        .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию', error: err })
-    );
+    .then((users) => res.send({ users }))
+    .catch((err) => res
+      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
+      .send({ message: 'Ошибка по умолчанию', error: err }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -64,7 +55,7 @@ module.exports.updateUserInfo = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .then((user) => {
       if (user) {
@@ -92,7 +83,7 @@ module.exports.updateUserAvatar = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .then((user) => {
       if (user) {
