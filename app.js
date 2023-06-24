@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 const { constants } = require('http2');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
@@ -20,6 +21,9 @@ mongoose
   .catch((err) => {
     console.log(`Ошибка: ${err.message}`);
   });
+
+// помогает защитить приложение от веб-уязвимостей путем соответствующей настройки заголовков HTTP
+app.use(helmet());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
