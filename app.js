@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { constants } = require('http2');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 
@@ -20,7 +21,6 @@ mongoose
   });
 
 // временное решение, добавляет в каждый запрос объект user (захардкодили _id)
-// записываем _id карточки которую нужно удалить
 app.use((req, res, next) => {
   req.user = {
     _id: '6491ee441b433eb98ee93579',
@@ -35,7 +35,9 @@ app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
 
 app.use('*', (req, res) => {
-  res.status(404).send({ message: 'Такой страницы не существует' });
+  res
+    .status(constants.HTTP_STATUS_NOT_FOUND)
+    .send({ message: 'Такой страницы не существует' });
 });
 
 app.listen(PORT, () => {
