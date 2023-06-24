@@ -1,8 +1,8 @@
 {
   "name": "express-mesto-gha",
   "version": "1.0.0",
-  "description": "[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)\r # Проект Mesto фронтенд + бэкенд",
-  "main": "index.js",
+  "description": "Проект Mesto: frontend + backend",
+  "main": "app.js",
   "scripts": {
     "lint": "npx eslint .",
     "lint-fix": "npx eslint . --fix",
@@ -14,7 +14,7 @@
     "url": "git+https://github.com/jsapro/express-mesto-gha.git"
   },
   "keywords": [],
-  "author": "I",
+  "author": "Aleksey",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/jsapro/express-mesto-gha/issues"
