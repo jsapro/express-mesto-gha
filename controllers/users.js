@@ -4,9 +4,9 @@ const User = require('../models/user');
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ users }))
-    .catch((err) => res
+    .catch(() => res
       .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: 'Ошибка по умолчанию', error: err }));
+      .send({ message: 'Ошибка по умолчанию' }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -23,12 +23,11 @@ module.exports.getUserById = (req, res) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
           message: 'Переданы некорректные данные для получения пользователя',
-          error: err,
         });
       }
       return res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию', error: err });
+        .send({ message: 'Ошибка по умолчанию' });
     });
 };
 
@@ -41,12 +40,11 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
           message: 'Переданы некорректные данные при создании пользователя',
-          error: err,
         });
       }
       return res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию', error: err });
+        .send({ message: 'Ошибка по умолчанию' });
     });
 };
 
@@ -69,12 +67,11 @@ module.exports.updateUserInfo = (req, res) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
           message: 'Переданы некорректные данные при обновлении профиля',
-          error: err,
         });
       }
       return res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию', error: err });
+        .send({ message: 'Ошибка по умолчанию' });
     });
 };
 
@@ -97,11 +94,10 @@ module.exports.updateUserAvatar = (req, res) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
           message: 'Переданы некорректные данные при обновлении аватара',
-          error: err,
         });
       }
       return res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию', error: err });
+        .send({ message: 'Ошибка по умолчанию' });
     });
 };

@@ -5,9 +5,9 @@ module.exports.getCards = (req, res) => {
   Card.find({})
     .populate(['name', 'link'])
     .then((cards) => res.send({ cards }))
-    .catch((err) => res
+    .catch(() => res
       .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: 'Ошибка по умолчанию', error: err }));
+      .send({ message: 'Ошибка по умолчанию' }));
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -24,12 +24,11 @@ module.exports.deleteCard = (req, res) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
           message: 'Переданы некорректные данные для получения карточки',
-          error: err,
         });
       }
       return res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию', error: err });
+        .send({ message: 'Ошибка по умолчанию' });
     });
 };
 
@@ -44,12 +43,11 @@ module.exports.createCard = (req, res) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
           message: 'Переданы некорректные данные при создании карточки',
-          error: err,
         });
       }
       return res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию', error: err });
+        .send({ message: 'Ошибка по умолчанию' });
     });
 };
 
@@ -72,12 +70,11 @@ module.exports.likeCard = (req, res) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
           message: 'Переданы некорректные данные для постановки/снятии лайка',
-          error: err,
         });
       }
       return res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию', error: err });
+        .send({ message: 'Ошибка по умолчанию' });
     });
 };
 
@@ -100,11 +97,10 @@ module.exports.dislikeCard = (req, res) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
           message: 'Переданы некорректные данные для постановки/снятии лайка',
-          error: err,
         });
       }
       return res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию', error: err });
+        .send({ message: 'Ошибка по умолчанию' });
     });
 };
