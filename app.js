@@ -1,5 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const { constants } = require('http2');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 
@@ -19,8 +22,20 @@ mongoose
     console.log(`Ошибка: ${err.message}`);
   });
 
+// помогает защитить приложение от веб-уязвимостей путем соответствующей настройки заголовков HTTP
+app.use(helmet());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 1, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+// Apply the rate limiting middleware to all requests
+app.use(limiter);
+
 // временное решение, добавляет в каждый запрос объект user (захардкодили _id)
-// записываем _id карточки которую нужно удалить
 app.use((req, res, next) => {
   req.user = {
     _id: '6491ee441b433eb98ee93579',
@@ -35,7 +50,9 @@ app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
 
 app.use('*', (req, res) => {
-  res.status(404).send({ message: 'Такой страницы не существует' });
+  res
+    .status(constants.HTTP_STATUS_NOT_FOUND)
+    .send({ message: 'Такой страницы не существует' });
 });
 
 app.listen(PORT, () => {
