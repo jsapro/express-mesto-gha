@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const { constants } = require('http2');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
@@ -36,6 +37,7 @@ const limiter = rateLimit({
 // Apply the rate limiting middleware to all requests
 app.use(limiter);
 
+app.use(cookieParser());
 // временное решение, добавляет в каждый запрос объект user (захардкодили _id)
 app.use((req, res, next) => {
   req.user = {

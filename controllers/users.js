@@ -15,6 +15,7 @@ module.exports.login = (req, res, next) => {
         .cookie('jwt', token, {
           maxAge: 3600000 * 24 * 7, // кука на 7 дней
           httpOnly: true, // не будет доступа из JavaScript
+          sameSite: true, // только если запрос сделан с того же домена
         })
         .end({ message: 'Отправлены cookie с jwt' });
       next();
