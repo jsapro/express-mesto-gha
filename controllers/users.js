@@ -7,8 +7,16 @@ module.exports.login = (req, res) => {
   const { email, password } = req.body;
   User.find({ email, password })
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'key-for-token');
-      res.send({ token });
+      const token = jwt.sign({ _id: user._id }, 'key-for-token', {
+        expires: '7d',
+      });
+      // res.send({ token });
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7, // кука на 7 дней
+          httpOnly: true, // не будет доступа из JavaScript
+        })
+        .end({ message: 'Отправлены cookie с jwt' });
     })
     .catch((err) => {
       res
