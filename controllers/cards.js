@@ -58,6 +58,7 @@ module.exports.likeCard = (req, res) => {
     // eslint-disable-next-line comma-dangle
     { new: true }
   )
+    .populate('owner')
     .then((card) => {
       if (card) {
         return res.send({ card });
