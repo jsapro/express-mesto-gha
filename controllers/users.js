@@ -3,7 +3,7 @@ const { constants } = require('http2');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.find({ email, password })
     .then((user) => {
@@ -17,20 +17,24 @@ module.exports.login = (req, res) => {
           httpOnly: true, // не будет доступа из JavaScript
         })
         .end({ message: 'Отправлены cookie с jwt' });
+      next();
     })
     .catch((err) => {
       res
         .status(constants.HTTP_STATUS_UNAUTHORIZED)
         .send({ message: 'Доступ запрещён', err: err.message });
+      next(err);
     });
 };
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ users }))
-    .catch(() => res
-      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: 'Ошибка по умолчанию' }));
+    .catch(() =>
+      res
+        .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию' })
+    );
 };
 
 module.exports.getUserById = (req, res) => {
@@ -55,10 +59,8 @@ module.exports.getUserById = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res) => {
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
+module.exports.createUser = (req, res, next) => {
+  const { name, about, avatar, email, password } = req.body;
 
   User.create({
     name,
@@ -67,7 +69,10 @@ module.exports.createUser = (req, res) => {
     email,
     password,
   })
-    .then((user) => res.send({ user }))
+    .then((user) => {
+      res.send({ user });
+      next();
+    })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
@@ -85,7 +90,7 @@ module.exports.updateUserInfo = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true, runValidators: true },
+    { new: true, runValidators: true }
   )
     .then((user) => {
       if (user) {
@@ -112,7 +117,7 @@ module.exports.updateUserAvatar = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
-    { new: true, runValidators: true },
+    { new: true, runValidators: true }
   )
     .then((user) => {
       if (user) {

@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const { constants } = require('http2');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
+const { login, createUser } = require('./controllers/users');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -45,6 +46,9 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json()); // вместо bodyParser
+
+app.use('/signin', login);
+app.use('/signup', createUser);
 
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
