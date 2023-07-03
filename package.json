@@ -4,6 +4,7 @@
   "description": "Проект Mesto: frontend + backend",
   "main": "app.js",
   "scripts": {
+    "start-debug": "nodemon --inspect -- app.js",
     "lint": "npx eslint .",
     "lint-fix": "npx eslint . --fix",
     "start": "node app.js",
