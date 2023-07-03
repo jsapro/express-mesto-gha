@@ -1,5 +1,21 @@
 const { constants } = require('http2');
+// const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+  User.find({ email, password })
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'key-for-token');
+      res.send({ token });
+    })
+    .catch((err) => {
+      res
+        .status(constants.HTTP_STATUS_UNAUTHORIZED)
+        .send({ message: 'Доступ запрещён', err: err.message });
+    });
+};
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -37,7 +53,11 @@ module.exports.createUser = (req, res) => {
   } = req.body;
 
   User.create({
-    name, about, avatar, email, password,
+    name,
+    about,
+    avatar,
+    email,
+    password,
   })
     .then((user) => res.send({ user }))
     .catch((err) => {
