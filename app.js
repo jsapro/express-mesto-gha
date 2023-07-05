@@ -37,10 +37,13 @@ const limiter = rateLimit({
 
 // Apply the rate limiting middleware to all requests
 app.use(limiter);
-
+app.use(express.json()); // вместо bodyParser
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
 // временное решение, добавляет в каждый запрос объект user (захардкодили _id)
 app.use((req, res, next) => {
+  // console.log(req.body, 555555555555);
   req.user = {
     _id: '6491ee441b433eb98ee93579',
   };
@@ -48,10 +51,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json()); // вместо bodyParser
-
-app.use('/signin', login);
-app.use('/signup', createUser);
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 app.use(auth);
 
