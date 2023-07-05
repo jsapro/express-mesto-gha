@@ -42,14 +42,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // временное решение, добавляет в каждый запрос объект user (захардкодили _id)
-app.use((req, res, next) => {
-  // console.log(req.body, 555555555555);
-  req.user = {
-    _id: '6491ee441b433eb98ee93579',
-  };
+// app.use((req, res, next) => {
+//   // console.log(req.body, 555555555555);
+//   req.user = {
+//     _id: '6491ee441b433eb98ee93579',
+//   };
 
-  next();
-});
+//   next();
+// });
 
 app.post('/signin', login);
 app.post('/signup', createUser);
