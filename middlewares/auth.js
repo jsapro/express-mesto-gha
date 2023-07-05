@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const constants = require('http2');
 
 const auth = (req, res, next) => {
-  const authorization = req.cookies.jwt;
+  const authorization = req.headers.jwt;
   if (!authorization) {
     next(new Error('No authorization'));
   } else {
@@ -15,6 +15,7 @@ const auth = (req, res, next) => {
       );
     }
   }
+  next();
 };
 
 module.exports = auth;
