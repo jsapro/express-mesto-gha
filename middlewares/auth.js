@@ -2,20 +2,27 @@ const jwt = require('jsonwebtoken');
 const constants = require('http2');
 
 const auth = (req, res, next) => {
-  const authorization = req.headers.jwt;
-  if (!authorization) {
-    next(new Error('No authorization'));
-  } else {
-    try {
-      const decoded = jwt.verify(authorization, 'key-for-token');
-      req.user = { _id: decoded._id };
-    } catch (err) {
-      next(
-        new Error('authorization error', constants.HTTP_STATUS_UNAUTHORIZED)
-      );
-    }
+  const { authorization } = req.headers;
+  let decodedPayload;
+
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    return next(new Error('No authorization'));
   }
-  next();
+
+  try {
+    const token = authorization.replace('Bearer ', '');
+    decodedPayload = jwt.verify(token, 'key-for-token');
+    if (!decodedPayload) {
+      return new Error('Неверный токен');
+    }
+  } catch (err) {
+    res.send(err);
+    next(new Error('authorization error', constants.HTTP_STATUS_UNAUTHORIZED));
+  }
+
+  req.user = decodedPayload;
+
+  return next();
 };
 
 module.exports = auth;
