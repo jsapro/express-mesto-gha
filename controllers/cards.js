@@ -5,21 +5,31 @@ module.exports.getCards = (req, res) => {
   Card.find({})
     .populate(['name', 'link'])
     .then((cards) => res.send({ cards }))
-    .catch(() => res
-      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: 'Ошибка по умолчанию' }));
+    .catch(() =>
+      res
+        .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию' })
+    );
 };
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then((deletedCard) => {
-      if (deletedCard) {
-        return res.send({ deletedCard });
+module.exports.deleteCard = (req, res, next) => {
+  Card.findById(req.params.cardId)
+    .orFail(new Error('404: Карточка с указанным _id не найдена'))
+    .then((card) => {
+      if (card.owner.toString() !== req.user._id) {
+        return next(new Error('Удалять можно только свои карточки'));
       }
-      return res
-        .status(constants.HTTP_STATUS_NOT_FOUND)
-        .send({ message: 'Карточка с указанным _id не найдена' });
+      return Card.deleteOne(card).then(() => res.send(card));
     })
+    // Card.findByIdAndRemove(req.params.cardId)
+    //   .then((deletedCard) => {
+    //     if (deletedCard) {
+    //       return res.send({ deletedCard });
+    //     }
+    //     return res
+    //       .status(constants.HTTP_STATUS_NOT_FOUND)
+    //       .send({ message: 'Карточка с указанным _id не найдена' });
+    //   })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
@@ -28,7 +38,7 @@ module.exports.deleteCard = (req, res) => {
       }
       return res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию' });
+        .send({ message: (err.message || 'Ошибка по умолчанию') });
     });
 };
 
