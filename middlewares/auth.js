@@ -6,7 +6,7 @@ const auth = (req, res, next) => {
   let decodedPayload;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return next(new Error('No authorization'));
+    return next(new Error('authorization error', constants.HTTP_STATUS_UNAUTHORIZED));
   }
 
   try {
@@ -16,7 +16,7 @@ const auth = (req, res, next) => {
       return new Error('Неверный токен');
     }
   } catch (err) {
-    res.send(err);
+    // res.send(err);
     next(new Error('authorization error', constants.HTTP_STATUS_UNAUTHORIZED));
   }
 
