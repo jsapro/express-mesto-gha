@@ -4,6 +4,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const { constants } = require('http2');
+const { celebrate, Joi, errors } = require('celebrate');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
@@ -41,8 +42,22 @@ app.use(express.json()); // вместо bodyParser
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().email().required(),
+    password: Joi.string().min(8).required(),
+  }),
+}), login);
+
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().regex(/[a-z0-9]/),
+    email: Joi.string().email().required().min(5),
+    password: Joi.string().min(8).required(),
+  }),
+}), createUser);
 
 app.use(auth);
 
@@ -54,6 +69,8 @@ app.use('*', (req, res) => {
     .status(constants.HTTP_STATUS_NOT_FOUND)
     .send({ message: 'Такой страницы не существует' });
 });
+
+app.use(errors()); // обработчик ошибок celebrate
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
