@@ -2,9 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const { constants } = require('http2');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
+const { login, createUser } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -34,17 +37,14 @@ const limiter = rateLimit({
 
 // Apply the rate limiting middleware to all requests
 app.use(limiter);
-
-// временное решение, добавляет в каждый запрос объект user (захардкодили _id)
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6491ee441b433eb98ee93579',
-  };
-
-  next();
-});
-
 app.use(express.json()); // вместо bodyParser
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+app.use(auth);
 
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
@@ -55,6 +55,16 @@ app.use('*', (req, res) => {
     .send({ message: 'Такой страницы не существует' });
 });
 
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+
+  res.status(statusCode).send({
+    message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
+  });
+
+  next();
+});
+
 app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
+  console.log(`Сервер запущен на порту: ${PORT}`);
 });
