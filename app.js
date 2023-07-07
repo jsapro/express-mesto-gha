@@ -41,16 +41,6 @@ app.use(express.json()); // вместо bodyParser
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// временное решение, добавляет в каждый запрос объект user (захардкодили _id)
-// app.use((req, res, next) => {
-//   // console.log(req.body, 555555555555);
-//   req.user = {
-//     _id: '6491ee441b433eb98ee93579',
-//   };
-
-//   next();
-// });
-
 app.post('/signin', login);
 app.post('/signup', createUser);
 
@@ -63,6 +53,16 @@ app.use('*', (req, res) => {
   res
     .status(constants.HTTP_STATUS_NOT_FOUND)
     .send({ message: 'Такой страницы не существует' });
+});
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+
+  res.status(statusCode).send({
+    message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
+  });
+
+  next();
 });
 
 app.listen(PORT, () => {
