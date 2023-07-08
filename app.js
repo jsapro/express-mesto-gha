@@ -3,13 +3,13 @@ const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
-const { constants } = require('http2');
 const { celebrate, Joi, errors } = require('celebrate');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { regexCheckUrl } = require('./utils/constants');
+const NotFoundErr = require('./utils/errors/NotFoundErr');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -43,32 +43,38 @@ app.use(express.json()); // вместо bodyParser
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().email().required(),
-    password: Joi.string().min(8).required(),
+app.post(
+  '/signin',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().email().required(),
+      password: Joi.string().min(8).required(),
+    }),
   }),
-}), login);
+  login,
+);
 
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(regexCheckUrl),
-    email: Joi.string().email().required().min(5),
-    password: Joi.string().min(8).required(),
+app.post(
+  '/signup',
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string().regex(regexCheckUrl),
+      email: Joi.string().email().required().min(5),
+      password: Joi.string().min(8).required(),
+    }),
   }),
-}), createUser);
+  createUser,
+);
 
 app.use(auth);
 
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
 
-app.use('*', (req, res) => {
-  res
-    .status(constants.HTTP_STATUS_NOT_FOUND)
-    .send({ message: 'Такой страницы не существует' });
+app.use('*', (req, res, next) => {
+  next(new NotFoundErr('Такой страницы не существует'));
 });
 
 app.use(errors()); // обработчик ошибок celebrate
