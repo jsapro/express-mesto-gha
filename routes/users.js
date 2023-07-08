@@ -7,7 +7,7 @@ const {
   updateUserAvatar,
   getCurrentUser,
 } = require('../controllers/users');
-const { regex } = require('../utils/constants');
+const { regexCheckUrl } = require('../utils/constants');
 
 router.get('/', getUsers);
 
@@ -49,7 +49,7 @@ router.patch(
     body: Joi.object().keys({
       avatar: Joi.string()
         .required()
-        .regex(regex),
+        .regex(regexCheckUrl),
     }),
   }),
   updateUserAvatar,
