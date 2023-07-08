@@ -9,6 +9,7 @@ const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const { regex } = require('./utils/constants');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -53,7 +54,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/[a-z0-9]/),
+    avatar: Joi.string().regex(regex),
     email: Joi.string().email().required().min(5),
     password: Joi.string().min(8).required(),
   }),
