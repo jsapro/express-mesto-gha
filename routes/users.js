@@ -7,6 +7,7 @@ const {
   updateUserAvatar,
   getCurrentUser,
 } = require('../controllers/users');
+const { regex } = require('../utils/constants');
 
 router.get('/', getUsers);
 
@@ -46,7 +47,9 @@ router.patch(
   '/me/avatar',
   celebrate({
     body: Joi.object().keys({
-      avatar: Joi.string().required().regex(/[0-9а-яa-z]/),
+      avatar: Joi.string()
+        .required()
+        .regex(regex),
     }),
   }),
   updateUserAvatar,
