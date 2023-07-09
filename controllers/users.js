@@ -4,13 +4,14 @@ const User = require('../models/user');
 const NotFoundErr = require('../utils/errors/NotFoundErr');
 const BadRequestErr = require('../utils/errors/BadRequestErr');
 const ConflictErr = require('../utils/errors/ConflictErr');
+const { JWT_SECRET, NODE_ENV } = require('../utils/config');
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'key-for-token', {
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'key-for-token', {
         expiresIn: '7d',
       });
       res.send({ token });
@@ -48,7 +49,10 @@ module.exports.createUser = (req, res, next) => {
         name, about, avatar, email,
       } = user;
       res.status(201).send({
-        name, about, avatar, email,
+        name,
+        about,
+        avatar,
+        email,
       });
       next();
     })
