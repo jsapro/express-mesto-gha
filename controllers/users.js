@@ -8,11 +8,6 @@ const ConflictErr = require('../utils/errors/ConflictErr');
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    next(new BadRequestErr('Почта и пароль не должны быть пустыми'));
-    return;
-  }
-
   User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'key-for-token', {
