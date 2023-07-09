@@ -16,7 +16,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (card.owner.toString() !== req.user._id) {
         return next(new ForbiddenErr('Удалять можно только свои карточки'));
       }
-      return Card.deleteOne(card).then(() => res.send(card));
+      return card.deleteOne().then(() => res.send(card));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
