@@ -11,18 +11,18 @@ const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { regexCheckUrl } = require('./utils/constants');
 const NotFoundErr = require('./utils/errors/NotFoundErr');
+const { MONGO_URL, PORT = 3000 } = require('./utils/config');
 
-const { PORT = 3000 } = process.env;
 const app = express();
 
 mongoose
-  .connect('mongodb://127.0.0.1:27017/mestodb', {
+  .connect(MONGO_URL, {
     useNewUrlParser: true,
     // useCreateIndex: true,  //not supported
     // useFindAndModify: false,   //not supported
   })
   .then(() => {
-    console.log('Подключено к mestodb');
+    console.log('Подключено к базе данных mestodb');
   })
   .catch((err) => {
     console.log(`Ошибка: ${err.message}`);
