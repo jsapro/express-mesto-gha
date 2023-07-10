@@ -12,9 +12,13 @@ module.exports.login = (req, res, next) => {
 
   User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'key-for-token', {
-        expiresIn: '7d',
-      });
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'key-for-token',
+        {
+          expiresIn: '7d',
+        }
+      );
       res.send({ token });
     })
     .catch(next);
@@ -46,9 +50,7 @@ module.exports.createUser = (req, res, next) => {
       return User.create(req.body);
     })
     .then((user) => {
-      const {
-        name, about, avatar, email,
-      } = user;
+      const { name, about, avatar, email } = user;
       res.status(201).send({
         name,
         about,
@@ -61,12 +63,12 @@ module.exports.createUser = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(
           new BadRequestErr(
-            'Переданы некорректные данные при создании пользователя',
-          ),
+            'Переданы некорректные данные при создании пользователя'
+          )
         );
       } else if (err.code === 11000) {
         next(
-          new ConflictErr('Пользователь с данным e-mail уже зарегистрирован'),
+          new ConflictErr('Пользователь с данным e-mail уже зарегистрирован')
         );
       } else {
         next(err);
@@ -74,13 +76,12 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-module.exports.updateUserInfo = (req, res, next) => {
-  const { name, about } = req.body;
-  User.findByIdAndUpdate(
-    req.user._id,
-    { name, about },
-    { new: true, runValidators: true },
-  )
+// Надо закешировать через “Прозрачное кэширование” ???
+const findAndUpdateUserData = (req, res, next, userData) => {
+  User.findByIdAndUpdate(req.user._id, userData, {
+    new: true,
+    runValidators: true,
+  })
     .then((user) => {
       if (user) {
         return res.send({ user });
@@ -91,35 +92,22 @@ module.exports.updateUserInfo = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return next(
           new BadRequestErr(
-            'Переданы некорректные данные при обновлении профиля',
-          ),
+            'Переданы некорректные данные при обновлении профиля'
+          )
         );
       }
       return next(err);
     });
 };
 
+module.exports.updateUserInfo = (req, res, next) => {
+  const { name, about } = req.body;
+  findAndUpdateUserData(req, res, next, { name, about });
+};
+
 module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(
-    req.user._id,
-    { avatar },
-    { new: true, runValidators: true },
-  )
-    .then((user) => {
-      if (user) {
-        return res.send({ user });
-      }
-      return next(new NotFoundErr('Пользователь с указанным _id не найден'));
-    })
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        return new BadRequestErr(
-          'Переданы некорректные данные при обновлении аватара',
-        );
-      }
-      return next(err);
-    });
+  findAndUpdateUserData(req, res, next, { avatar });
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
