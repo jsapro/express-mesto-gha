@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Card = require('../models/card');
 const NotFoundErr = require('../utils/errors/NotFoundErr');
 const BadRequestErr = require('../utils/errors/BadRequestErr');
@@ -16,12 +17,12 @@ module.exports.deleteCard = (req, res, next) => {
       if (card.owner.toString() !== req.user._id) {
         return next(new ForbiddenErr('Удалять можно только свои карточки'));
       }
-      return Card.deleteOne(card).then(() => res.send(card));
+      return card.deleteOne().then(() => res.send(card));
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         return new BadRequestErr(
-          'Переданы некорректные данные для получения карточки',
+          'Переданы некорректные данные для получения карточки'
         );
       }
       return next(err);
@@ -35,11 +36,11 @@ module.exports.createCard = (req, res, next) => {
   Card.create({ name, link, owner: id })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         return next(
           new BadRequestErr(
-            'Переданы некорректные данные при создании карточки',
-          ),
+            'Переданы некорректные данные при создании карточки'
+          )
         );
       }
       return next(err);
@@ -61,11 +62,11 @@ module.exports.likeCard = (req, res, next) => {
       return next(new NotFoundErr('Передан несуществующий _id карточки'));
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         return next(
           new BadRequestErr(
-            'Переданы некорректные данные для постановки/снятии лайка',
-          ),
+            'Переданы некорректные данные для постановки/снятии лайка'
+          )
         );
       }
       return next(err);
@@ -86,13 +87,23 @@ module.exports.dislikeCard = (req, res, next) => {
       return next(new NotFoundErr('Передан несуществующий _id карточки'));
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         return next(
           new BadRequestErr(
-            'Переданы некорректные данные для постановки/снятии лайка',
-          ),
+            'Переданы некорректные данные для постановки/снятии лайка'
+          )
         );
       }
       return next(err);
     });
 };
+
+// CastError - возникает, если передан невалидный ID
+// — идентификаторы в MongoDB имеют определенную структуру.
+// Обычно эта ошибка возникает при любых манипуляциях, где используется ID — поиск, удаление и др.
+// после аутентификации можно гарантировать, что ID пользователя валидный
+
+// ValidationError - ошибка валидации на стороне БД
+// возникает при передаче невалидных даных(любых, за исключением ID)
+// если данные не соответствуют схеме, которая описана для модели.
+// обычно возникает при создании объекта или его обновления.
