@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Card = require('../models/card');
 const NotFoundErr = require('../utils/errors/NotFoundErr');
 const BadRequestErr = require('../utils/errors/BadRequestErr');
@@ -19,9 +20,9 @@ module.exports.deleteCard = (req, res, next) => {
       return card.deleteOne().then(() => res.send(card));
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         return new BadRequestErr(
-          'Переданы некорректные данные для получения карточки',
+          'Переданы некорректные данные для получения карточки'
         );
       }
       return next(err);
@@ -35,11 +36,11 @@ module.exports.createCard = (req, res, next) => {
   Card.create({ name, link, owner: id })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         return next(
           new BadRequestErr(
-            'Переданы некорректные данные при создании карточки',
-          ),
+            'Переданы некорректные данные при создании карточки'
+          )
         );
       }
       return next(err);
@@ -61,11 +62,11 @@ module.exports.likeCard = (req, res, next) => {
       return next(new NotFoundErr('Передан несуществующий _id карточки'));
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         return next(
           new BadRequestErr(
-            'Переданы некорректные данные для постановки/снятии лайка',
-          ),
+            'Переданы некорректные данные для постановки/снятии лайка'
+          )
         );
       }
       return next(err);
@@ -86,11 +87,11 @@ module.exports.dislikeCard = (req, res, next) => {
       return next(new NotFoundErr('Передан несуществующий _id карточки'));
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         return next(
           new BadRequestErr(
-            'Переданы некорректные данные для постановки/снятии лайка',
-          ),
+            'Переданы некорректные данные для постановки/снятии лайка'
+          )
         );
       }
       return next(err);

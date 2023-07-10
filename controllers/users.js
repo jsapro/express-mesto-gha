@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -57,7 +58,7 @@ module.exports.createUser = (req, res, next) => {
       next();
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         next(
           new BadRequestErr(
             'Переданы некорректные данные при создании пользователя',
@@ -87,7 +88,7 @@ module.exports.updateUserInfo = (req, res, next) => {
       return next(new NotFoundErr('Пользователь с указанным _id не найден'));
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         return next(
           new BadRequestErr(
             'Переданы некорректные данные при обновлении профиля',
@@ -112,7 +113,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
       return next(new NotFoundErr('Пользователь с указанным _id не найден'));
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         return new BadRequestErr(
           'Переданы некорректные данные при обновлении аватара',
         );
