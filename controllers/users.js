@@ -78,7 +78,6 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-// Надо закешировать через “Прозрачное кэширование” ???
 const findAndUpdateUserData = (req, res, next, userData) => {
   User.findByIdAndUpdate(req.user._id, userData, {
     new: true,
@@ -101,6 +100,37 @@ const findAndUpdateUserData = (req, res, next, userData) => {
       return next(err);
     });
 };
+
+// // Надо закешировать через “Прозрачное кэширование” ???
+// function cashingDecorator(func) {
+//   let cache = new Map();
+//   console.log('cache-1', cache);
+
+//   return async function temp(req, res, next, { x }) {
+//     if (cache.has(x)) {
+//       console.log(cache.has(x), 'cache.has(x)');
+//       return cache.get(x);
+//     }
+
+//     // let result = await func(req, res, next, { x });
+
+//     let result2 = new Promise((resolve, reject) => {
+//       resolve(func(req, res, next, { x }));
+//     });
+//     result2.then((user) => {
+//       console.log('user', user);
+//       cache.set(x, user);
+//       console.log('cache', cache);
+//     });
+
+//     // console.log('result', result);
+//     // cache.set(x, result);
+//     // console.log('cache-2', cache);
+//     return result2;
+//   };
+// }
+
+// findAndUpdateUserData = cashingDecorator(findAndUpdateUserData);
 
 module.exports.updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
