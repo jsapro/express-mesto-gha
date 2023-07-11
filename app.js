@@ -42,7 +42,7 @@ app.use(cookieParser());
 app.use(router);
 
 app.use(errors()); // обработчик ошибок celebrate
-router.use(finalErrorHandler);
+app.use(finalErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`Сервер запущен на порту: ${PORT}`);

@@ -17,7 +17,7 @@ module.exports.login = (req, res, next) => {
         NODE_ENV === 'production' ? JWT_SECRET : 'key-for-token',
         {
           expiresIn: '7d',
-        }
+        },
       );
       res.send({ token });
     })
@@ -50,7 +50,9 @@ module.exports.createUser = (req, res, next) => {
       return User.create(req.body);
     })
     .then((user) => {
-      const { name, about, avatar, email } = user;
+      const {
+        name, about, avatar, email,
+      } = user;
       res.status(201).send({
         name,
         about,
@@ -63,12 +65,12 @@ module.exports.createUser = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(
           new BadRequestErr(
-            'Переданы некорректные данные при создании пользователя'
-          )
+            'Переданы некорректные данные при создании пользователя',
+          ),
         );
       } else if (err.code === 11000) {
         next(
-          new ConflictErr('Пользователь с данным e-mail уже зарегистрирован')
+          new ConflictErr('Пользователь с данным e-mail уже зарегистрирован'),
         );
       } else {
         next(err);
@@ -92,8 +94,8 @@ const findAndUpdateUserData = (req, res, next, userData) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return next(
           new BadRequestErr(
-            'Переданы некорректные данные при обновлении профиля'
-          )
+            'Переданы некорректные данные при обновлении профиля',
+          ),
         );
       }
       return next(err);
