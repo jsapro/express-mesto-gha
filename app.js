@@ -8,6 +8,7 @@ const { errors } = require('celebrate');
 const { MONGO_URL, PORT = 3000 } = require('./utils/config');
 const router = require('./routes');
 const { finalErrorHandler } = require('./middlewares/finalErrorHandler');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
 
@@ -39,8 +40,11 @@ app.use(express.json()); // вместо bodyParser
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+app.use(requestLogger);
+
 app.use(router);
 
+app.use(errorLogger);
 app.use(errors()); // обработчик ошибок celebrate
 app.use(finalErrorHandler);
 

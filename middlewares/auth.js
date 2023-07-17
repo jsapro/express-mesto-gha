@@ -15,7 +15,7 @@ const auth = (req, res, next) => {
     decodedPayload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'key-for-token');
     if (!decodedPayload) return next(handleAuthError());
   } catch (err) {
-    next(handleAuthError());
+    return next(handleAuthError());
   }
 
   req.user = decodedPayload;
