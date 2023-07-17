@@ -19,10 +19,10 @@ mongoose
     // useFindAndModify: false,   //not supported
   })
   .then(() => {
-    console.log('Подключено к базе данных mestodb');
+    // console.log('Подключено к базе данных mestodb');
   })
-  .catch((err) => {
-    console.log(`Ошибка mongoose.connect: ${err.message}`);
+  .catch(() => {
+    // console.log(`Ошибка mongoose.connect: ${err.message}`);
   });
 
 // помогает защитить приложение от веб-уязвимостей путем соответствующей настройки заголовков HTTP
@@ -49,5 +49,5 @@ app.use(errors()); // обработчик ошибок celebrate
 app.use(finalErrorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Сервер запущен на порту: ${PORT}`);
+  // console.log(`Сервер запущен на порту: ${PORT}`);
 });
